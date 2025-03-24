@@ -1,7 +1,9 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
-import { Heart, Activity, Droplet, Wifi, WifiOff, Fingerprint, AlertCircle } from "lucide-react"
+import { useState, useEffect, useRef, useContext } from "react"
+import { Heart, Activity, Droplet, Wifi, WifiOff, Fingerprint, AlertCircle, LogOut } from "lucide-react"
+import { AuthContext } from "../context/AuthContext"
+import { useNavigate } from "react-router-dom"
 
 const HeartRateMonitor = () => {
   const [connected, setConnected] = useState(false)
@@ -13,6 +15,9 @@ const HeartRateMonitor = () => {
   const [irValue, setIrValue] = useState(0)
   const [error, setError] = useState("")
   const [readings, setReadings] = useState([])
+
+  const { currentUser, logout } = useContext(AuthContext)
+  const navigate = useNavigate()
 
   const websocketRef = useRef(null)
   const readingsLimit = 60 // Store 30 seconds of data (assuming 0.5s updates)
@@ -80,6 +85,15 @@ const HeartRateMonitor = () => {
             }
             return newReadings
           })
+
+          // Save reading to database
+          saveReading({
+            userId: currentUser._id,
+            heartRate: data.heartRate,
+            spo2: data.spo2,
+            avgHeartRate: data.beatAvg,
+            timestamp: timestamp,
+          })
         } catch (err) {
           console.error("Error parsing WebSocket data:", err)
         }
@@ -92,6 +106,24 @@ const HeartRateMonitor = () => {
     }
   }
 
+  // Save reading to database
+  const saveReading = async (readingData) => {
+    try {
+      const token = localStorage.getItem("token")
+
+      await fetch("http://localhost:5000/api/readings", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(readingData),
+      })
+    } catch (error) {
+      console.error("Error saving reading:", error)
+    }
+  }
+
   // Clean up WebSocket connection on component unmount
   useEffect(() => {
     return () => {
@@ -101,15 +133,33 @@ const HeartRateMonitor = () => {
     }
   }, [])
 
+  const handleLogout = () => {
+    if (websocketRef.current) {
+      websocketRef.current.close()
+    }
+    logout()
+    navigate("/signin")
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 text-white p-6">
       <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-10">
-          <h1 className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-purple-500 inline-block mb-2">
-            Heart Rate & SpO2 Monitor
-          </h1>
-          <p className="text-slate-400">Connect to your ESP32 device to monitor vital signs in real-time</p>
+        {/* Header with user info */}
+        <div className="flex flex-col md:flex-row justify-between items-center mb-8">
+          <div className="text-center md:text-left mb-4 md:mb-0">
+            <h1 className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-purple-500 inline-block mb-2">
+              Heart Rate & SpO2 Monitor
+            </h1>
+            <p className="text-slate-400">Welcome, {currentUser?.name || "User"}</p>
+          </div>
+
+          <button
+            onClick={handleLogout}
+            className="px-4 py-2 rounded-lg font-medium flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-all"
+          >
+            <LogOut className="w-4 h-4" />
+            Sign Out
+          </button>
         </div>
 
         {/* Connection Controls */}

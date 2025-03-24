@@ -1,12 +1,13 @@
-"use client"
-
-import { useState, useEffect } from "react"
-import { Link } from "react-router-dom"
-import { Menu, X, Heart } from "lucide-react"
+import { useState, useEffect, useContext } from "react"
+import { Link, useNavigate } from "react-router-dom"
+import { Menu, X, Heart, LogIn, UserPlus } from "lucide-react"
+import { AuthContext } from "../context/AuthContext"
 
 export default function NavBar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+  const { isAuthenticated, currentUser, logout } = useContext(AuthContext)
+  const navigate = useNavigate()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -16,6 +17,11 @@ export default function NavBar() {
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
+
+  const handleLogout = () => {
+    logout()
+    navigate("/signin")
+  }
 
   return (
     <header
@@ -34,9 +40,11 @@ export default function NavBar() {
             <Link to="/" className="text-gray-300 hover:text-white transition-colors">
               Home
             </Link>
-            <Link to="/data" className="text-gray-300 hover:text-white transition-colors">
-              Dashboard
-            </Link>
+            {isAuthenticated && (
+              <Link to="/monitor" className="text-gray-300 hover:text-white transition-colors">
+                Dashboard
+              </Link>
+            )}
             <a href="#features" className="text-gray-300 hover:text-white transition-colors">
               Features
             </a>
@@ -45,10 +53,35 @@ export default function NavBar() {
             </a>
           </nav>
 
-          <div className="hidden md:block">
-            <button className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-semibold py-2 px-6 rounded-full transition-all duration-300 transform hover:scale-105">
-              Contact Us
-            </button>
+          <div className="hidden md:flex items-center gap-4">
+            {isAuthenticated ? (
+              <>
+                <span className="text-gray-300">Welcome, {currentUser?.name}</span>
+                <button
+                  onClick={handleLogout}
+                  className="bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white font-semibold py-2 px-6 rounded-full transition-all duration-300 transform hover:scale-105"
+                >
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/signin"
+                  className="flex items-center gap-2 text-gray-300 hover:text-white transition-colors px-4 py-2"
+                >
+                  <LogIn className="w-4 h-4" />
+                  Sign In
+                </Link>
+                <Link
+                  to="/signup"
+                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-2 px-6 rounded-full transition-all duration-300 transform hover:scale-105 flex items-center gap-2"
+                >
+                  <UserPlus className="w-4 h-4" />
+                  Sign Up
+                </Link>
+              </>
+            )}
           </div>
 
           <button className="md:hidden text-gray-300 hover:text-white" onClick={() => setIsMenuOpen(!isMenuOpen)}>
@@ -68,13 +101,15 @@ export default function NavBar() {
             >
               Home
             </Link>
-            <Link
-              to="/data"
-              className="text-gray-300 hover:text-white transition-colors py-2"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Dashboard
-            </Link>
+            {isAuthenticated && (
+              <Link
+                to="/monitor"
+                className="text-gray-300 hover:text-white transition-colors py-2"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Dashboard
+              </Link>
+            )}
             <a
               href="#features"
               className="text-gray-300 hover:text-white transition-colors py-2"
@@ -89,13 +124,42 @@ export default function NavBar() {
             >
               How It Works
             </a>
-            <button className="bg-gradient-to-r from-pink-500 to-purple-600 text-white font-semibold py-2 px-6 rounded-full mt-2">
-              Contact Us
-            </button>
+            {isAuthenticated ? (
+              <>
+                <span className="text-gray-300 py-2">Welcome, {currentUser?.name}</span>
+                <button
+                  onClick={() => {
+                    handleLogout()
+                    setIsMenuOpen(false)
+                  }}
+                  className="bg-gradient-to-r from-rose-500 to-pink-600 text-white font-semibold py-2 px-6 rounded-full mt-2"
+                >
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/signin"
+                  className="text-gray-300 hover:text-white transition-colors py-2 flex items-center gap-2"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <LogIn className="w-4 h-4" />
+                  Sign In
+                </Link>
+                <Link
+                  to="/signup"
+                  className="bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold py-2 px-6 rounded-full mt-2 flex items-center gap-2 justify-center"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <UserPlus className="w-4 h-4" />
+                  Sign Up
+                </Link>
+              </>
+            )}
           </nav>
         </div>
       )}
     </header>
   )
 }
-
