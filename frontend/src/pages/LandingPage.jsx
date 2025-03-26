@@ -74,7 +74,7 @@ export default function LandingPage() {
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
                 <button className="flex items-center justify-center gap-2 bg-transparent border-2 border-purple-500 text-white font-semibold py-3 px-8 rounded-full hover:bg-purple-500/10 transition-all duration-300">
-                  Learn More
+                  Contact Us
                 </button>
               </div>
             </motion.div>
