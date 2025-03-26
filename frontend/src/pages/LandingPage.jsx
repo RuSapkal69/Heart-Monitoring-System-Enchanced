@@ -119,6 +119,7 @@ export default function LandingPage() {
 
       {/* Features Section */}
       <motion.section
+        id="features"
         className="py-20 relative z-10"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
@@ -159,6 +160,7 @@ export default function LandingPage() {
 
       {/* How It Works Section */}
       <motion.section
+        id="how-it-works"
         className="py-20 bg-slate-800/50 relative z-10"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
