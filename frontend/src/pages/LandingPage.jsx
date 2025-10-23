@@ -1,5 +1,3 @@
-"use client"
-
 import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import { motion } from "framer-motion"
@@ -88,12 +86,12 @@ export default function LandingPage() {
               <div className="relative w-full h-[400px] rounded-2xl overflow-hidden bg-gradient-to-br from-purple-900/50 to-pink-900/50 backdrop-blur-sm border border-white/10">
                 <div className="absolute inset-0 flex items-center justify-center">
                   <img
-                    src="/placeholder.svg?height=400&width=400"
+                    src="https://www.researchgate.net/publication/341909859/figure/fig3/AS:898708992442369@1591280329308/Smart-Heart-cardiac-monitor-necklace-by-Leah-Heiss-2016-in-collaboration-with-St.png"
                     alt="Heart Pulse Monitoring Necklace"
                     className="object-cover w-full h-full opacity-80"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent"></div>
-                  <div className="absolute bottom-6 left-6 right-6 p-4 bg-black/30 backdrop-blur-md rounded-xl border border-white/10">
+                  <div className="absolute bottom-0 left-6 right-6 p-4 bg-gray-600/30 backdrop-blur-md rounded-xl border border-white/10">
                     <div className="flex items-center gap-4">
                       <div className="flex items-center gap-2">
                         <Heart className="w-5 h-5 text-red-500 animate-pulse" />
